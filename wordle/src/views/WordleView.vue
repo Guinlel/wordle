@@ -8,13 +8,13 @@
                     <input class="input-word" placeholder="Devinez le mot secret" type="text" v-model="testWord">
                     <div class="button" @click="handleTestWord">Entrée</div>
                 </div>
-                <div v-if="remainingAttempts === 0" @click="resetAttempt" class="retry-button">Essayer un nouveau mot
+                <div v-if="isGameOver || isWinner" @click="resetAttempt" class="retry-button">Essayer un nouveau mot
                 </div>
-                <div v-if="remainingAttempts !== 0">Il vous reste {{ remainingAttempts }} essais</div>
+                <div v-if="remainingAttempts !== 0 && !isWinner">Il vous reste {{ remainingAttempts }} essais</div>
                 <div v-if="isWinner">Bravo vous avez trouvé le mot avec succés</div>
                 <div v-if="isGameOver">Aie ... Vous avez épuisé toute vos tentatives</div>
                 <div v-if="errorMessage">{{ errorMessage }}</div>
-                <div v-if="remainingAttempts === 0">Le mot a deviner étais :
+                <div v-if="isGameOver">Le mot a deviner étais :
                     <p class="target-word">{{ targetWord }}</p>
                 </div>
             </div>
@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import WordleClassGame, { type Attempt } from '@/classes/WordleClass'
-import { ref } from 'vue';
+import { ref, watchEffect } from 'vue';
 import CardWord from '@/components/CardWord.vue';
 import ListAttempts from '@/components/ListAttempts.vue';
 import HeaderWordle from '@/components/HeaderWordle.vue';
@@ -65,7 +65,7 @@ function handleTestWord() {
             isWinner.value = game.isWinner();
         }
 
-        if (remainingAttempts.value === 0) {
+        if (remainingAttempts.value === 0 && !game.isWinner) {
             isGameOver.value = true;
         }
 
@@ -77,6 +77,7 @@ function resetAttempt() {
     game.resetAttempts();
     remainingAttempts.value = game.remainingAttempts();
     testWord.value = "";
+    isWinner.value = game.isWinner();
     isGameOver.value = game.isGameOver();
     attempts.value.length = 0;
 }
