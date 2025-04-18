@@ -65,7 +65,7 @@ function handleTestWord() {
             isWinner.value = game.isWinner();
         }
 
-        if (remainingAttempts.value === 0 && !game.isWinner) {
+        if (remainingAttempts.value === 0 && !game.isWinner()) {
             isGameOver.value = true;
         }
 
